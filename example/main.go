@@ -41,21 +41,21 @@ func main() {
 		fmt.Println("Airport by ICAO code:", *airport)
 	}
 
+	// Find an airport by its IATA code
 	airport = finder.FindAirportByIATACode("DUS")
 	if airport != nil {
 		fmt.Println("\nAirport by IATA code:", *airport)
 	}
 
 	// Find the nearest active airport within a given radius
-	var radiusInMeters float64 = 25000 // see def.go which offers a few functions to convert e.g. nautical miles to meters and vice versa
+	radiusInMeters := 25000.0 // see def.go which offers a few functions to convert e.g. nautical miles to meters and vice versa
 	airport = finder.FindNearestAirport(33.942501, -118.407997, radiusInMeters, airports.AirportTypeActive)
 	if airport != nil {
 		fmt.Println("\nNearest airport:", *airport)
 	}
 
 	// Find active airports within a given radius
-	radiusInNauticalMiles := 100.0
-	radiusInMeters = airports.NauticalMilesToMeters(radiusInNauticalMiles)
+	radiusInMeters = airports.NauticalMilesToMeters(100.0)
 	maxResults := 10
 	airportList := finder.FindNearestAirports(33.942501, -118.407997, radiusInMeters, maxResults, airports.AirportTypeRunways)
 	if len(airportList) > 0 {
@@ -89,7 +89,7 @@ func main() {
 	if len(navaids) > 0 {
 		fmt.Println("\nNearest navaids:")
 		for i, navaid := range navaids {
-			fmt.Printf("#%d %v\n", i, *navaid)
+			fmt.Printf("#%d %v\n", i+1, *navaid)
 		}
 	}
 
@@ -99,7 +99,7 @@ func main() {
 	if len(navaids) > 0 {
 		fmt.Println("\nNavaids associated with airport ICAO code:")
 		for i, navaid := range navaids {
-			fmt.Printf("#%d %v\n", i, *navaid)
+			fmt.Printf("#%d %v\n", i+1, *navaid)
 		}
 	}
 }
