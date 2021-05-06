@@ -41,7 +41,7 @@ func main() {
 		fmt.Println("Airport by ICAO code:", *airport)
 	}
 
-	airport = finder.FindAirportByIATACode("DUSI")
+	airport = finder.FindAirportByIATACode("DUS")
 	if airport != nil {
 		fmt.Println("\nAirport by IATA code:", *airport)
 	}
