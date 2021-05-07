@@ -50,8 +50,8 @@ func downloadFile(filepath, url, progressLabel string) error {
 	}
 	defer resp.Body.Close()
 
-	counter := &FileProgress{Name: progressLabel, Size: uint64(resp.ContentLength)}
-	if _, err = io.Copy(out, io.TeeReader(resp.Body, counter)); err != nil {
+	progress := &FileProgress{Name: progressLabel, Size: uint64(resp.ContentLength)}
+	if _, err = io.Copy(out, io.TeeReader(resp.Body, progress)); err != nil {
 		return err
 	}
 	return nil
