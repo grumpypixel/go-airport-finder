@@ -1,4 +1,4 @@
-package airports
+package alphafoxtrot
 
 type Airport struct {
 	ICAOCode         string

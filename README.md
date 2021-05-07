@@ -12,14 +12,14 @@ The following snippets are based on the [provided example code](https://github.c
 
 ```golang
 // Create an AirportFinder instance
-finder := airports.NewAirportFinder()
+finder := alphafoxtrot.NewAirportFinder()
 
 // Create LoadOptions with preset filepaths
 dataDir := "./data"
-options := airports.PresetLoadOptions(dataDir)
+options := alphafoxtrot.PresetLoadOptions(dataDir)
 
 // Specify a filter what airport types should be loaded, in this case: all airports, please.
-filter := airports.AirportTypeAll
+filter := alphafoxtrot.AirportTypeAll
 
 // Load the airport data into memory
 if err := finder.Load(options, filter); len(err) > 0 {
@@ -31,7 +31,7 @@ if err := finder.Load(options, filter); len(err) > 0 {
 // Alternatively, you can specify the LoadOptions "manually".
 // So in this case, only airports, frequencies and runways will be loaded.
 // Regions, countries, navaids will be omitted.
-options := airports.LoadOptions{
+options := alphafoxtrot.LoadOptions{
 	AirportsFilename:    "./data/airports.csv",            // *required*
 	FrequenciesFilename: "./data/airport-frequencies.csv", // optional
 	RunwaysFilename      "./data/runways.csv",             // optional
@@ -46,7 +46,7 @@ You can download the latest version of the .CSV files directly from [OurAirports
 ```golang
 // A hacky way to download all needed files is by calling DownloadDatabase()
 dataDir := "./data"
-airports.DownloadDatabase(dataDir) // assuming that the given directory exists...
+alphafoxtrot.DownloadDatabase(dataDir) // assuming that the given directory exists...
 ```
 
 So much for the initialization part.
@@ -70,7 +70,7 @@ if airport := finder.FindAirportByIATACode("DUS"); airport != nil {
 latitude := 33.942501
 longitude := -118.407997
 radiusInMeters := 25000.0
-filter := airports.AirportTypeActive
+filter := alphafoxtrot.AirportTypeActive
 if airport := finder.FindNearestAirport(latitude, longitude, radiusInMeters, filter); airport != nil {
 	fmt.Println(*airport)
 }
@@ -80,11 +80,11 @@ if airport := finder.FindNearestAirport(latitude, longitude, radiusInMeters, fil
 // Find the active airports with a runway (so no heliports and no seaplane based airports) within a given radius
 latitude := 33.942501
 longitude := -118.407997
-radiusInMeters := airports.NauticalMilesToMeters(100.0)
+radiusInMeters := alphafoxtrot.NauticalMilesToMeters(100.0)
 maxResults := 10
-filter := airports.AirportTypeActive|airports.AirportTypeRunways
-airportList := finder.FindNearestAirports(latitude, longitude, radiusInMeters, maxResults, filter)
-for i, airport := range airportList {
+filter := alphafoxtrot.AirportTypeActive|alphafoxtrot.AirportTypeRunways
+airports := finder.FindNearestAirports(latitude, longitude, radiusInMeters, maxResults, filter)
+for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
 ```
@@ -92,9 +92,9 @@ for i, airport := range airportList {
 ```golang
 // Find all large airports in a specific region
 regionISOCode := "US-CA"
-filter := airports.AirportTypeLarge
-airportList := finder.FindAirportsByRegion(regionISOCode, filter)
-for i, airport := range airportList {
+filter := alphafoxtrot.AirportTypeLarge
+airports := finder.FindAirportsByRegion(regionISOCode, filter)
+for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
 ```
@@ -102,9 +102,9 @@ for i, airport := range airportList {
 ```golang
 // Find all large and medium airports in a country
 countryISOCode := "IS"
-filter := airports.AirportTypeLarge|airports.AirportTypeMedium
-airportList := finder.FindAirportsByCountry(countryISOCode, filter)
-for i, airport := range airportList {
+filter := alphafoxtrot.AirportTypeLarge|alphafoxtrot.AirportTypeMedium
+airports := finder.FindAirportsByCountry(countryISOCode, filter)
+for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
 ```
