@@ -113,24 +113,6 @@ func (af *AirportFinder) FindAirportByIATACode(iataCode string) *Airport {
 	return af.makeAirport(airport)
 }
 
-func (af *AirportFinder) FindAirportsByRegion(isoRegion string, airportTypeFilter uint64) []*Airport {
-	airportsByRegion := af.airportDB.FindByRegion(isoRegion, airportTypeFilter)
-	airports := make([]*Airport, 0, len(airportsByRegion))
-	for _, airport := range airportsByRegion {
-		airports = append(airports, af.makeAirport(airport))
-	}
-	return airports
-}
-
-func (af *AirportFinder) FindAirportsByCountry(isoCountry string, airportTypeFilter uint64) []*Airport {
-	airportsByCountry := af.airportDB.FindByCountry(isoCountry, airportTypeFilter)
-	airports := make([]*Airport, 0, len(airportsByCountry))
-	for _, airport := range airportsByCountry {
-		airports = append(airports, af.makeAirport(airport))
-	}
-	return airports
-}
-
 func (af *AirportFinder) FindNearestAirport(latitudeDeg, longitudeDeg, radiusMeters float64, airportTypeFilter uint64) *Airport {
 	nearestAirport := af.airportDB.FindNearestAirport(latitudeDeg, longitudeDeg, radiusMeters, airportTypeFilter)
 	return af.makeAirport(nearestAirport)
@@ -145,10 +127,21 @@ func (af *AirportFinder) FindNearestAirports(latitudeDeg, longitudeDeg, radiusMe
 	return airports
 }
 
-func (af *AirportFinder) GetAllAirports(airportTypeFilter uint64) []*Airport {
-	filteredAirports := af.airportDB.GetAllByFilter(airportTypeFilter)
-	airports := make([]*Airport, 0, len(filteredAirports))
-	for _, airport := range filteredAirports {
+func (af *AirportFinder) FindNearestAirportsByRegion(isoRegion string, latitudeDeg, longitudeDeg, radiusMeters float64, maxResults int, airportTypeFilter uint64) []*Airport {
+	airportsByRegion := af.airportDB.FindByRegion(isoRegion, airportTypeFilter)
+	airportsByRegion = FindNearestAirports(airportsByRegion, latitudeDeg, longitudeDeg, radiusMeters, maxResults)
+	airports := make([]*Airport, 0, len(airportsByRegion))
+	for _, airport := range airportsByRegion {
+		airports = append(airports, af.makeAirport(airport))
+	}
+	return airports
+}
+
+func (af *AirportFinder) FindNearestAirportsByCountry(isoCountry string, latitudeDeg, longitudeDeg, radiusMeters float64, maxResults int, airportTypeFilter uint64) []*Airport {
+	airportsByCountry := af.airportDB.FindByCountry(isoCountry, airportTypeFilter)
+	airportsByCountry = FindNearestAirports(airportsByCountry, latitudeDeg, longitudeDeg, radiusMeters, maxResults)
+	airports := make([]*Airport, 0, len(airportsByCountry))
+	for _, airport := range airportsByCountry {
 		airports = append(airports, af.makeAirport(airport))
 	}
 	return airports
@@ -172,10 +165,23 @@ func (af *AirportFinder) FindNavaidsByAirportICAOCode(icaoCode string) []*Navaid
 	return navaids
 }
 
-func (af *AirportFinder) GetAllNavaids() []*Navaid {
+func (af *AirportFinder) FindAllAirports(isoRegionFilter, isoCountryFilter, continentFilter string, airportTypeFilter uint64) []*Airport {
+	filteredAirports := af.airportDB.FindAll(isoRegionFilter, isoCountryFilter, continentFilter, airportTypeFilter)
+	airports := make([]*Airport, 0, len(filteredAirports))
+	for _, airport := range filteredAirports {
+		airports = append(airports, af.makeAirport(airport))
+	}
+	return airports
+}
+
+func (af *AirportFinder) FindAllNavaids(isoCountryFilter string) []*Navaid {
+	filterCountry := len(isoCountryFilter) > 0
 	navaids := make([]*Navaid, 0, len(af.navaidDB.Navaids))
 	if af.navaidDB != nil {
 		for _, navaid := range af.navaidDB.Navaids {
+			if filterCountry && navaid.ISOCountry != isoCountryFilter {
+				continue
+			}
 			navaids = append(navaids, NewNavaid(navaid))
 		}
 	}

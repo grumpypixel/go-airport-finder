@@ -277,7 +277,7 @@ func (db *AirportDB) FindNearestAirports(latitudeDeg, longitudeDeg, radiusMeters
 		return candidates[i].Distance < candidates[j].Distance
 	})
 
-	airports := make([]*AirportData, 0)
+	airports := make([]*AirportData, 0, len(candidates))
 	count := MinInt(len(candidates), maxResults)
 	for i := 0; i < count; i++ {
 		airports = append(airports, candidates[i].Airport)
@@ -285,15 +285,61 @@ func (db *AirportDB) FindNearestAirports(latitudeDeg, longitudeDeg, radiusMeters
 	return airports
 }
 
-func (db *AirportDB) GetAllByFilter(airportTypeFilter uint64) []*AirportData {
+func (db *AirportDB) FindAll(isoRegionFilter string, isoCountryFilter string, continentFilter string, airportTypeFilter uint64) []*AirportData {
+	filterRegion := len(isoRegionFilter) > 0
+	filterCountry := len(isoCountryFilter) > 0
+	filterContinent := len(continentFilter) > 0
+
 	airports := make([]*AirportData, 0)
 	for _, airport := range db.Airports {
 		if airport.TypeFlag&airportTypeFilter == 0 {
 			continue
 		}
+		if filterRegion && airport.ISORegion != isoRegionFilter {
+			continue
+		}
+		if filterCountry && airport.ISOCountry != isoCountryFilter {
+			continue
+		}
+		if filterContinent && airport.Continent != continentFilter {
+			continue
+		}
 		airports = append(airports, airport)
 	}
 	return airports
+}
+
+func FindNearestAirports(airports []*AirportData, latitudeDeg, longitudeDeg, radiusMeters float64, maxResults int) []*AirportData {
+	if radiusMeters < 0 {
+		radiusMeters = math.MaxFloat64
+	}
+	if maxResults < 0 {
+		maxResults = math.MaxInt32
+	}
+
+	type Candidate struct {
+		Airport  *AirportData
+		Distance float64
+	}
+
+	candidates := make([]*Candidate, 0)
+	for _, airport := range airports {
+		distance := Distance(latitudeDeg, longitudeDeg, airport.LatitudeDeg, airport.LongitudeDeg)
+		if distance <= radiusMeters {
+			candidates = append(candidates, &Candidate{airport, distance})
+		}
+	}
+
+	sort.Slice(candidates, func(i, j int) bool {
+		return candidates[i].Distance < candidates[j].Distance
+	})
+
+	result := make([]*AirportData, 0, len(candidates))
+	count := MinInt(len(candidates), maxResults)
+	for i := 0; i < count; i++ {
+		result = append(result, candidates[i].Airport)
+	}
+	return result
 }
 
 func (db *AirportDB) parseAirportType(typ string) uint64 {

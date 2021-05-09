@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// Find the nearest active airport within a given radius
-	radiusInMeters := 25000.0 // see def.go which offers a few functions to convert e.g. nautical miles to meters and vice versa
+	radiusInMeters := alphafoxtrot.KilometersToMeters(25)
 	airport = finder.FindNearestAirport(33.942501, -118.407997, radiusInMeters, alphafoxtrot.AirportTypeActive)
 	if airport != nil {
 		fmt.Println("\nNearest airport:", *airport)
@@ -61,25 +61,29 @@ func main() {
 	}
 
 	// Find all large airports in a region
-	airports = finder.FindAirportsByRegion("US-CA", alphafoxtrot.AirportTypeLarge)
+	radiusInMeters = alphafoxtrot.MilesToMeters(50.0)
+	maxResults = 10
+	airports = finder.FindNearestAirportsByRegion("US-CA", 33.942501, -118.407997, radiusInMeters, maxResults, alphafoxtrot.AirportTypeLarge)
 	if len(airports) > 0 {
-		fmt.Println("\nAirports by region:")
+		fmt.Println("\nNearest Airports by region:")
 		for i, airport := range airports {
 			fmt.Printf("#%d: %v\n", i+1, *airport)
 		}
 	}
 
 	// Find all large and medium airports in a country
-	airports = finder.FindAirportsByCountry("IS", alphafoxtrot.AirportTypeLarge|alphafoxtrot.AirportTypeMedium)
+	radiusInMeters = alphafoxtrot.NauticalMilesToMeters(50.0)
+	maxResults = 10
+	airports = finder.FindNearestAirportsByCountry("US", 33.942501, -118.407997, radiusInMeters, maxResults, alphafoxtrot.AirportTypeMedium)
 	if len(airports) > 0 {
-		fmt.Println("\nAirports by Country:")
+		fmt.Println("\nNearest Airports by Country:")
 		for i, airport := range airports {
 			fmt.Printf("#%d: %v\n", i+1, *airport)
 		}
 	}
 
 	// Find the nearest navaids within a given radius
-	radiusInMeters = 50000
+	radiusInMeters = alphafoxtrot.KilometersToMeters(50.0)
 	navaids := finder.FindNearestNavaids(33.942501, -118.407997, radiusInMeters, maxResults)
 	if len(navaids) > 0 {
 		fmt.Println("\nNearest navaids:")

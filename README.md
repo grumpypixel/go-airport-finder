@@ -2,7 +2,7 @@
 
 This is a Golang library which retrieves all sorts of information about airports around the world. The underlying data is based on data collected and provided by [OurAirports.com](https://ourairports.com).
 
-A first version of this was created to power the "Airport Finder" for another project of mine, the [GoPilot](https://github.com/grumpypixel/msfs2020-gopilot).
+An initial version of this library was built to power the "Airport Finder" for the [GoPilot](https://github.com/grumpypixel/msfs2020-gopilot).
 
 ## The API
 
@@ -69,9 +69,9 @@ if airport := finder.FindAirportByIATACode("DUS"); airport != nil {
 // Find the nearest active airport within a given radius
 latitude := 33.942501
 longitude := -118.407997
-radiusInMeters := 25000.0
-filter := alphafoxtrot.AirportTypeActive
-if airport := finder.FindNearestAirport(latitude, longitude, radiusInMeters, filter); airport != nil {
+radiusInMeters := alphafoxtrot.NauticalMilesToMeters(25)
+airportTypeFilter := alphafoxtrot.AirportTypeActive
+if airport := finder.FindNearestAirport(latitude, longitude, radiusInMeters, airportTypeFilter); airport != nil {
 	fmt.Println(*airport)
 }
 ```
@@ -80,10 +80,10 @@ if airport := finder.FindNearestAirport(latitude, longitude, radiusInMeters, fil
 // Find the active airports with a runway (so no heliports and no seaplane based airports) within a given radius
 latitude := 33.942501
 longitude := -118.407997
-radiusInMeters := alphafoxtrot.NauticalMilesToMeters(100.0)
+radiusInMeters := alphafoxtrot.MilesToMeters(61)
 maxResults := 10
-filter := alphafoxtrot.AirportTypeActive|alphafoxtrot.AirportTypeRunways
-airports := finder.FindNearestAirports(latitude, longitude, radiusInMeters, maxResults, filter)
+airportTypeFilter := alphafoxtrot.AirportTypeActive|alphafoxtrot.AirportTypeRunways
+airports := finder.FindNearestAirports(latitude, longitude, radiusInMeters, maxResults, airportTypeFilter)
 for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
@@ -92,8 +92,12 @@ for i, airport := range airports {
 ```golang
 // Find all large airports in a specific region
 regionISOCode := "US-CA"
-filter := alphafoxtrot.AirportTypeLarge
-airports := finder.FindAirportsByRegion(regionISOCode, filter)
+latitude := 33.942501
+longitude := -118.407997
+radiusInMeters := alphafoxtrot.NauticalMilesToMeters(100)
+maxResults := 10
+airportTypeFilter := alphafoxtrot.AirportTypeMedium|alphafoxtrot.AirportTypeSmall
+airports := finder.FindNearestAirportsByRegion(regionISOCode, latitude, longitude, radiusInMeters, maxResults, airportTypeFilter)
 for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
@@ -102,8 +106,12 @@ for i, airport := range airports {
 ```golang
 // Find all large and medium airports in a country
 countryISOCode := "IS"
-filter := alphafoxtrot.AirportTypeLarge|alphafoxtrot.AirportTypeMedium
-airports := finder.FindAirportsByCountry(countryISOCode, filter)
+latitude := 64.1299972534
+longitude := -21.9405994415
+radiusInMeters := alphafoxtrot.NauticalMilesToMeters(250)
+maxResults := 10
+airportTypeFilter := alphafoxtrot.AirportTypeLarge|alphafoxtrot.AirportTypeMedium
+airports := finder.FindNearestAirportsByCountry(countryISOCode, latitude, longitude, radiusInMeters, maxResults, airportTypeFilter)
 for i, airport := range airports {
 	fmt.Println(i, *airport)
 }
@@ -113,7 +121,7 @@ for i, airport := range airports {
 // Find the nearest navaids within a given radius
 latitude := 33.942501
 longitude := -118.407997
-radiusInMeters := 50000
+radiusInMeters := alphafoxtrot.KilometersToMeters(50)
 maxResults := 10
 navaids := finder.FindNearestNavaids(latitude, longitude, radiusInMeters, maxResults)
 for i, navaid := range navaids {
