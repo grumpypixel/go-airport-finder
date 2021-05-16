@@ -104,10 +104,6 @@ func main() {
 }
 
 func validateData(dataDir string) {
-	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
-		fmt.Println("Creating directory:", dataDir)
-		os.MkdirAll(dataDir, os.ModePerm)
-	}
 	downloadFiles := false
 	for _, filename := range alphafoxtrot.OurAirportsFiles {
 		filepath := path.Join(dataDir, filename)

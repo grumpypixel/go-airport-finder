@@ -57,7 +57,7 @@ func Clear(af *AirportFinder) {
 func (af *AirportFinder) Load(options *LoadOptions, airportFilter uint64) []error {
 	errors := make([]error, 0)
 	if options == nil {
-		return append(errors, fmt.Errorf("unable not load anything since options are null"))
+		return append(errors, fmt.Errorf("unable not load anything since options are nil"))
 	}
 	if options.AirportsFilename == "" {
 		return append(errors, fmt.Errorf("cannot load airports: invalid filename"))

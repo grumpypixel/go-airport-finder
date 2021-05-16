@@ -2,18 +2,15 @@ package alphafoxtrot
 
 import (
 	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"os"
 	"path"
+	"time"
+
+	"github.com/grumpypixel/go-webget"
 )
 
 // This isn't the code you're looking for.
 // This was created to power the example code.
 // And for fun of course.
-
-const tempExtension = ".download"
 
 // Download csv files from OurAirports.com
 func DownloadDatabase(targetDir string) {
@@ -22,59 +19,25 @@ func DownloadDatabase(targetDir string) {
 		files = append(files, OurAirportsBaseURL+filename)
 	}
 	for _, url := range files {
-		filename := path.Base(url)
-		target := path.Join(targetDir, filename)
-		temp := target + tempExtension
-		label := filename
-		if err := downloadFile(temp, url, label); err != nil {
-			log.Println(err)
-			continue
+		options := webget.Options{
+			ProgressHandler: MyProgress{},
+			Timeout:         time.Second * 60,
+			CreateTargetDir: true,
 		}
-		if err := os.Rename(temp, target); err != nil {
-			log.Println(err)
-		}
-		fmt.Println("")
+		webget.DownloadToFile(url, targetDir, "", &options)
 	}
 }
 
-func downloadFile(filepath, url, progressLabel string) error {
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
+type MyProgress struct{}
 
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	progress := &FileProgress{Name: progressLabel, Size: uint64(resp.ContentLength)}
-	if _, err = io.Copy(out, io.TeeReader(resp.Body, progress)); err != nil {
-		return err
-	}
-	return nil
+func (p MyProgress) Start(sourceURL string) {
+	// fmt.Println()
 }
 
-type FileProgress struct {
-	Name  string
-	Bytes uint64
-	Size  uint64
+func (p MyProgress) Update(sourceURL string, percentage float64, bytesRead, contentLength int64) {
+	fmt.Printf("\rDownloading %s: %v bytes [%.2f%%]", path.Base(sourceURL), bytesRead, percentage)
 }
 
-func (fp *FileProgress) Write(p []byte) (int, error) {
-	n := len(p)
-	fp.Bytes += uint64(n)
-	fp.UpdateProgress()
-	return n, nil
-}
-
-func (fp *FileProgress) UpdateProgress() {
-	percentage := ""
-	if fp.Size > 0 {
-		value := float64(fp.Bytes) / float64(fp.Size) * 100.0
-		percentage = fmt.Sprintf("[%.0f%%]", value)
-	}
-	fmt.Printf("\rDownloading %s: %v bytes %s", fp.Name, fp.Bytes, percentage)
+func (p MyProgress) Done(sourceURL string) {
+	fmt.Println()
 }
