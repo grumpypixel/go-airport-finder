@@ -4,6 +4,10 @@ This is a Golang library which retrieves all sorts of information about airports
 
 An initial version of this library was built to power the "Airport Finder" for the [GoPilot](https://github.com/grumpypixel/msfs2020-gopilot).
 
+## Installation
+
+`$ go get github.com/grumpypixel/go-airport-finder`
+
 ## The API
 
 This should be pretty straightforward and hopefully easy-to-use.
