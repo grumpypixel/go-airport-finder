@@ -91,7 +91,7 @@ func NewAirport(airport *AirportData, region *RegionData, country *CountryData, 
 		return nil
 	}
 	aeroport := &Airport{
-		ICAOCode:         airport.IATACode,
+		ICAOCode:         airport.ICAOCode,
 		Type:             airport.Type,
 		Name:             airport.Name,
 		LatitudeDeg:      airport.LatitudeDeg,
