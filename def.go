@@ -67,6 +67,24 @@ func MetersToNauticalMiles(m float64) float64 {
 	return m * 0.000539957
 }
 
+func AirportTypeFromString(typ string) uint64 {
+	switch typ {
+	case "closed":
+		return AirportTypeClosed
+	case "small_airport":
+		return AirportTypeSmall
+	case "medium_airport":
+		return AirportTypeMedium
+	case "large_airport":
+		return AirportTypeLarge
+	case "heliport":
+		return AirportTypeHeliport
+	case "seaplane_base":
+		return AirportTypeSeaplaneBase
+	}
+	return AirportTypeUnknown
+}
+
 // see https://stackoverflow.com/questions/43167417/calculate-distance-between-two-points-in-leaflet
 // returns the distance between to coordinates in meters
 func Distance(fromLatitudeDeg, fromLongitudeDeg, toLatitudeDeg, toLongitudeDeg float64) float64 {
