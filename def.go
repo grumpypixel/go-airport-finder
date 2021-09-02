@@ -30,6 +30,16 @@ const (
 )
 
 const (
+	AirportTypeClosedName       = "closed"
+	AirportTypeSmallName        = "small_airport"
+	AirportTypeMediumName       = "medium_airport"
+	AirportTypeLargeName        = "large_airport"
+	AirportTypeHeliportName     = "heliport"
+	AirportTypeSeaplaneBaseName = "seaplane_base"
+	AirportTypeUnknownName      = "unknown"
+)
+
+const (
 	DegToRad    float64 = math.Pi / 180.0
 	EarthRadius float64 = 6371.0 * 1000.0
 )
@@ -69,17 +79,17 @@ func MetersToNauticalMiles(m float64) float64 {
 
 func AirportTypeFromString(typ string) uint64 {
 	switch typ {
-	case "closed":
+	case AirportTypeClosedName:
 		return AirportTypeClosed
-	case "small_airport":
+	case AirportTypeSmallName:
 		return AirportTypeSmall
-	case "medium_airport":
+	case AirportTypeMediumName:
 		return AirportTypeMedium
-	case "large_airport":
+	case AirportTypeLargeName:
 		return AirportTypeLarge
-	case "heliport":
+	case AirportTypeHeliportName:
 		return AirportTypeHeliport
-	case "seaplane_base":
+	case AirportTypeSeaplaneBaseName:
 		return AirportTypeSeaplaneBase
 	}
 	return AirportTypeUnknown

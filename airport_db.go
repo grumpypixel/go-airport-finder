@@ -96,7 +96,7 @@ func (db *AirportDB) Parse(file string, airportTypeFilter uint64, skipFirstLine 
 		}
 
 		typ := row[colAirportType]
-		typeFlag := db.parseAirportType(typ)
+		typeFlag := AirportTypeFromString(typ)
 		if typeFlag == AirportTypeUnknown || typeFlag&airportTypeFilter == 0 {
 			continue
 		}
@@ -340,22 +340,4 @@ func FindNearestAirports(airports []*AirportData, latitudeDeg, longitudeDeg, rad
 		result = append(result, candidates[i].Airport)
 	}
 	return result
-}
-
-func (db *AirportDB) parseAirportType(typ string) uint64 {
-	switch typ {
-	case "closed":
-		return AirportTypeClosed
-	case "heliport":
-		return AirportTypeHeliport
-	case "seaplane_base":
-		return AirportTypeSeaplaneBase
-	case "small_airport":
-		return AirportTypeSmall
-	case "medium_airport":
-		return AirportTypeMedium
-	case "large_airport":
-		return AirportTypeLarge
-	}
-	return AirportTypeUnknown
 }
